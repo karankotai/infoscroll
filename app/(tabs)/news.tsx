@@ -31,30 +31,39 @@ export default function NewsScreen() {
 
   const fetchNews = useCallback(async () => {
     setError(null);
-    const {
-      data: { session },
-    } = await supabase.auth.getSession();
-    if (!session) {
-      setError("Not authenticated");
-      return;
-    }
+    try {
+      const {
+        data: { session },
+      } = await supabase.auth.getSession();
 
-    const response = await fetch(
-      `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/fetch-news?topic=${selectedTopic}`,
-      {
-        headers: {
-          Authorization: `Bearer ${session.access_token}`,
-        },
+      const headers: Record<string, string> = {};
+      if (session) {
+        headers["Authorization"] = `Bearer ${session.access_token}`;
       }
-    );
 
-    const result = await response.json();
-    if (result.error) {
-      setError(result.error);
-      return;
+      const controller = new AbortController();
+      const timeout = setTimeout(() => controller.abort(), 15000);
+
+      const response = await fetch(
+        `${process.env.EXPO_PUBLIC_SUPABASE_URL}/functions/v1/fetch-news?topic=${selectedTopic}`,
+        { headers, signal: controller.signal }
+      );
+      clearTimeout(timeout);
+
+      const result = await response.json();
+      if (result.error) {
+        setError(result.error);
+        return;
+      }
+
+      setCards(result.cards ?? []);
+    } catch (e: any) {
+      if (e.name === "AbortError") {
+        setError("Request timed out. Pull to retry.");
+      } else {
+        setError(e.message || "Failed to fetch news");
+      }
     }
-
-    setCards(result.cards ?? []);
   }, [selectedTopic]);
 
   useEffect(() => {
@@ -146,8 +155,8 @@ export default function NewsScreen() {
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60 },
   header: { fontSize: 28, fontWeight: "bold", color: "#FFF", paddingHorizontal: 24, marginBottom: 16 },
-  topicBar: { maxHeight: 50, marginBottom: 16 },
-  topicBarContent: { paddingHorizontal: 24, gap: 8 },
+  topicBar: { flexGrow: 0, flexShrink: 0, height: 44, marginBottom: 16 },
+  topicBarContent: { paddingHorizontal: 24, gap: 8, alignItems: "center" },
   topicChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,

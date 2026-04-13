@@ -1,5 +1,5 @@
 import { useState } from "react";
-import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, ScrollView, StyleSheet } from "react-native";
 import { z } from "zod";
 import { DidYouKnowContent } from "../../lib/schemas";
 
@@ -9,7 +9,7 @@ export function DidYouKnowCard({ title, content, accentColor }: Props) {
   const [revealed, setRevealed] = useState(false);
 
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
       <View style={styles.labelRow}>
         <Text style={styles.icon}>🤯</Text>
         <Text style={[styles.label, { color: accentColor }]}>DID YOU KNOW?</Text>
@@ -35,12 +35,13 @@ export function DidYouKnowCard({ title, content, accentColor }: Props) {
           <Text style={styles.revealIcon}>👇</Text>
         </TouchableOpacity>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", paddingHorizontal: 28 },
+  container: { flex: 1, paddingHorizontal: 28 },
+  contentContainer: { justifyContent: "center", flexGrow: 1 },
   labelRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16 },
   icon: { fontSize: 16 },
   label: { fontSize: 12, fontWeight: "800", letterSpacing: 2 },

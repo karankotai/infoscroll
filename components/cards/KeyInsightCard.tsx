@@ -1,4 +1,4 @@
-import { View, Text, StyleSheet } from "react-native";
+import { View, Text, ScrollView, StyleSheet } from "react-native";
 import { z } from "zod";
 import { KeyInsightContent } from "../../lib/schemas";
 
@@ -6,7 +6,7 @@ type Props = { title: string; content: z.infer<typeof KeyInsightContent>; accent
 
 export function KeyInsightCard({ title, content, accentColor, topicColor }: Props) {
   return (
-    <View style={styles.container}>
+    <ScrollView style={styles.container} contentContainerStyle={styles.contentContainer} showsVerticalScrollIndicator={false}>
       <View style={styles.labelRow}>
         <Text style={styles.icon}>💡</Text>
         <Text style={[styles.label, { color: accentColor }]}>KEY INSIGHT</Text>
@@ -29,12 +29,13 @@ export function KeyInsightCard({ title, content, accentColor, topicColor }: Prop
           </Text>
         </View>
       )}
-    </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", paddingHorizontal: 28 },
+  container: { flex: 1, paddingHorizontal: 28 },
+  contentContainer: { justifyContent: "center", flexGrow: 1 },
   labelRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16 },
   icon: { fontSize: 16 },
   label: { fontSize: 12, fontWeight: "800", letterSpacing: 2 },
