@@ -104,8 +104,8 @@ const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60 },
   header: { fontSize: 28, fontWeight: "bold", color: "#FFF", paddingHorizontal: 24 },
   count: { fontSize: 14, color: "#666", paddingHorizontal: 24, marginTop: 4, marginBottom: 16 },
-  filterBar: { maxHeight: 50, marginBottom: 16 },
-  filterBarContent: { paddingHorizontal: 24, gap: 8 },
+  filterBar: { flexGrow: 0, flexShrink: 0, height: 44, marginBottom: 16 },
+  filterBarContent: { paddingHorizontal: 24, gap: 8, alignItems: "center" },
   filterChip: {
     paddingHorizontal: 14,
     paddingVertical: 8,
