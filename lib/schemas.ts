@@ -54,7 +54,7 @@ export const DidYouKnowContent = z.object({
 export const ShortVideoContent = z.object({
   youtube_id: z.string().min(1),
   channel_name: z.string().min(1),
-  duration_seconds: z.number().int().positive().max(60),
+  duration_seconds: z.number().int().positive().max(120),
 });
 
 export const CardContentByType = {

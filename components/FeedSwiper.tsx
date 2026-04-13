@@ -69,7 +69,23 @@ export function FeedSwiper({ cards, onIndexChange, onSave, onSkip, savedCardIds 
       {cards.map((card, index) => {
         const gradient = TOPIC_GRADIENTS[card.topic];
         const topicColor = TOPIC_CONFIG[card.topic].color;
+        const isVideo = card.card_type === "short_video";
+        const isActive = index === activeIndex;
 
+        // Video cards get a clean full-screen layout
+        if (isVideo) {
+          return (
+            <View key={card.id} style={[styles.videoCard, { height: CARD_HEIGHT }]}>
+              <CardRenderer
+                card={card}
+                topicColor={topicColor}
+                isActive={isActive}
+              />
+            </View>
+          );
+        }
+
+        // Regular cards get gradient + topic pill + actions
         return (
           <LinearGradient
             key={card.id}
@@ -85,7 +101,7 @@ export function FeedSwiper({ cards, onIndexChange, onSave, onSkip, savedCardIds 
               card={card}
               threadPosition={getThreadPosition(card, index)}
               topicColor={topicColor}
-              isActive={index === activeIndex}
+              isActive={isActive}
             />
             <CardActions
               onSave={() => onSave(card.id)}
@@ -102,5 +118,6 @@ export function FeedSwiper({ cards, onIndexChange, onSave, onSkip, savedCardIds 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0A0A0A" },
   card: { justifyContent: "space-between", paddingTop: 60, paddingBottom: 100 },
+  videoCard: { backgroundColor: "#000" },
   topicRow: { paddingHorizontal: 28 },
 });

@@ -1,11 +1,11 @@
+import { useState, useEffect } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { z } from "zod";
 import { ShortVideoContent } from "../../lib/schemas";
 
-const SCREEN_WIDTH = Dimensions.get("window").width;
-const PLAYER_WIDTH = SCREEN_WIDTH - 56;
-const PLAYER_HEIGHT = Math.min(PLAYER_WIDTH * 0.56, 280);
+const { width: SCREEN_WIDTH, height: SCREEN_HEIGHT } = Dimensions.get("window");
+const PLAYER_HEIGHT = SCREEN_HEIGHT - 180;
 
 type Props = {
   title: string;
@@ -15,26 +15,29 @@ type Props = {
 };
 
 export function ShortVideoCard({ title, content, accentColor, isActive }: Props) {
+  const [ready, setReady] = useState(false);
+  const [shouldPlay, setShouldPlay] = useState(false);
+
+  // Delay play slightly after becoming active to let the player initialize
+  useEffect(() => {
+    if (isActive && ready) {
+      const timer = setTimeout(() => setShouldPlay(true), 300);
+      return () => clearTimeout(timer);
+    } else {
+      setShouldPlay(false);
+    }
+  }, [isActive, ready]);
+
   return (
     <View style={styles.container}>
-      <View style={styles.labelRow}>
-        <Text style={styles.icon}>🎬</Text>
-        <Text style={[styles.label, { color: accentColor }]}>SHORT VIDEO</Text>
-        <View style={[styles.durationBadge, { backgroundColor: accentColor + "20", borderColor: accentColor + "40" }]}>
-          <Text style={[styles.durationText, { color: accentColor }]}>
-            {content.duration_seconds}s
-          </Text>
-        </View>
-      </View>
-
-      <Text style={styles.title}>{title}</Text>
-
-      <View style={[styles.playerWrapper, { borderColor: accentColor + "30" }]}>
+      {/* Player fills most of the screen */}
+      <View style={[styles.playerWrapper, { borderColor: accentColor + "20" }]}>
         <YoutubePlayer
           height={PLAYER_HEIGHT}
-          width={PLAYER_WIDTH}
-          play={isActive}
+          width={SCREEN_WIDTH}
+          play={shouldPlay}
           videoId={content.youtube_id}
+          onReady={() => setReady(true)}
           initialPlayerParams={{
             preventFullScreen: false,
             modestbranding: true,
@@ -48,36 +51,58 @@ export function ShortVideoCard({ title, content, accentColor, isActive }: Props)
         />
       </View>
 
-      <View style={styles.channelRow}>
-        <View style={[styles.channelDot, { backgroundColor: accentColor }]} />
-        <Text style={styles.channelName}>{content.channel_name}</Text>
+      {/* Overlay info at bottom */}
+      <View style={styles.infoOverlay}>
+        <View style={styles.titleRow}>
+          <Text style={styles.title} numberOfLines={2}>{title}</Text>
+          <View style={[styles.durationBadge, { backgroundColor: accentColor }]}>
+            <Text style={styles.durationText}>{content.duration_seconds}s</Text>
+          </View>
+        </View>
+        <View style={styles.channelRow}>
+          <View style={[styles.channelDot, { backgroundColor: accentColor }]} />
+          <Text style={styles.channelName}>{content.channel_name}</Text>
+        </View>
       </View>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, justifyContent: "center", paddingHorizontal: 28 },
-  labelRow: { flexDirection: "row", alignItems: "center", gap: 8, marginBottom: 16 },
-  icon: { fontSize: 16 },
-  label: { fontSize: 12, fontWeight: "800", letterSpacing: 2 },
+  container: {
+    flex: 1,
+    backgroundColor: "#000",
+  },
+  playerWrapper: {
+    flex: 1,
+    justifyContent: "center",
+    overflow: "hidden",
+    backgroundColor: "#000",
+  },
+  infoOverlay: {
+    paddingHorizontal: 20,
+    paddingVertical: 12,
+    backgroundColor: "rgba(0,0,0,0.7)",
+  },
+  titleRow: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 10,
+    marginBottom: 6,
+  },
+  title: {
+    fontSize: 17,
+    fontWeight: "700",
+    color: "#FFF",
+    flex: 1,
+  },
   durationBadge: {
     paddingHorizontal: 8,
-    paddingVertical: 3,
-    borderRadius: 8,
-    borderWidth: 1,
-    marginLeft: "auto",
+    paddingVertical: 4,
+    borderRadius: 6,
   },
-  durationText: { fontSize: 11, fontWeight: "700" },
-  title: { fontSize: 22, fontWeight: "bold", color: "#FFF", marginBottom: 16, lineHeight: 30 },
-  playerWrapper: {
-    borderRadius: 16,
-    overflow: "hidden",
-    borderWidth: 1,
-    marginBottom: 16,
-    backgroundColor: "#111",
-  },
+  durationText: { color: "#FFF", fontSize: 11, fontWeight: "700" },
   channelRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  channelDot: { width: 8, height: 8, borderRadius: 4 },
-  channelName: { fontSize: 15, color: "#BBB", fontWeight: "500" },
+  channelDot: { width: 6, height: 6, borderRadius: 3 },
+  channelName: { fontSize: 13, color: "#AAA", fontWeight: "500" },
 });
