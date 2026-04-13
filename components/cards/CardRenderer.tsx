@@ -11,9 +11,10 @@ type Props = {
   card: Card;
   threadPosition?: { current: number; total: number };
   topicColor: string;
+  isActive: boolean;
 };
 
-export function CardRenderer({ card, threadPosition, topicColor }: Props) {
+export function CardRenderer({ card, threadPosition, topicColor, isActive }: Props) {
   const accentColor = CARD_TYPE_ACCENT[card.card_type];
 
   switch (card.card_type) {
@@ -35,6 +36,6 @@ export function CardRenderer({ card, threadPosition, topicColor }: Props) {
     case "did_you_know":
       return <DidYouKnowCard title={card.title} content={card.content as any} accentColor={accentColor} />;
     case "short_video":
-      return <ShortVideoCard title={card.title} content={card.content as any} accentColor={accentColor} />;
+      return <ShortVideoCard title={card.title} content={card.content as any} accentColor={accentColor} isActive={isActive} />;
   }
 }

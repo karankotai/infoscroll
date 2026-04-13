@@ -1,4 +1,4 @@
-import { useCallback, useRef } from "react";
+import { useCallback, useRef, useState } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
@@ -26,6 +26,7 @@ type Props = {
 export function FeedSwiper({ cards, onIndexChange, onSave, onSkip, savedCardIds }: Props) {
   const scrollY = useSharedValue(0);
   const currentIndex = useRef(0);
+  const [activeIndex, setActiveIndex] = useState(0);
 
   const scrollHandler = useAnimatedScrollHandler({
     onScroll: (event) => {
@@ -40,6 +41,7 @@ export function FeedSwiper({ cards, onIndexChange, onSave, onSkip, savedCardIds 
       );
       if (newIndex !== currentIndex.current && newIndex >= 0 && newIndex < cards.length) {
         currentIndex.current = newIndex;
+        setActiveIndex(newIndex);
         onIndexChange(newIndex);
       }
     },
@@ -83,6 +85,7 @@ export function FeedSwiper({ cards, onIndexChange, onSave, onSkip, savedCardIds 
               card={card}
               threadPosition={getThreadPosition(card, index)}
               topicColor={topicColor}
+              isActive={index === activeIndex}
             />
             <CardActions
               onSave={() => onSave(card.id)}

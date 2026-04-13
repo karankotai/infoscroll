@@ -1,4 +1,3 @@
-import { useState, useCallback } from "react";
 import { View, Text, StyleSheet, Dimensions } from "react-native";
 import YoutubePlayer from "react-native-youtube-iframe";
 import { z } from "zod";
@@ -6,19 +5,16 @@ import { ShortVideoContent } from "../../lib/schemas";
 
 const SCREEN_WIDTH = Dimensions.get("window").width;
 const PLAYER_WIDTH = SCREEN_WIDTH - 56;
-const PLAYER_HEIGHT = PLAYER_WIDTH * (16 / 9);
+const PLAYER_HEIGHT = Math.min(PLAYER_WIDTH * 0.56, 280);
 
-type Props = { title: string; content: z.infer<typeof ShortVideoContent>; accentColor: string };
+type Props = {
+  title: string;
+  content: z.infer<typeof ShortVideoContent>;
+  accentColor: string;
+  isActive: boolean;
+};
 
-export function ShortVideoCard({ title, content, accentColor }: Props) {
-  const [playing, setPlaying] = useState(false);
-
-  const onStateChange = useCallback((state: string) => {
-    if (state === "ended") {
-      setPlaying(false);
-    }
-  }, []);
-
+export function ShortVideoCard({ title, content, accentColor, isActive }: Props) {
   return (
     <View style={styles.container}>
       <View style={styles.labelRow}>
@@ -35,19 +31,25 @@ export function ShortVideoCard({ title, content, accentColor }: Props) {
 
       <View style={[styles.playerWrapper, { borderColor: accentColor + "30" }]}>
         <YoutubePlayer
-          height={PLAYER_HEIGHT > 400 ? 400 : PLAYER_HEIGHT}
+          height={PLAYER_HEIGHT}
           width={PLAYER_WIDTH}
-          play={playing}
+          play={isActive}
           videoId={content.youtube_id}
-          onChangeState={onStateChange}
+          initialPlayerParams={{
+            preventFullScreen: false,
+            modestbranding: true,
+            rel: false,
+          }}
           webViewProps={{
             allowsInlineMediaPlayback: true,
+            mediaPlaybackRequiresUserAction: false,
+            allowsFullscreenVideo: true,
           }}
         />
       </View>
 
       <View style={styles.channelRow}>
-        <Text style={styles.channelLabel}>Channel</Text>
+        <View style={[styles.channelDot, { backgroundColor: accentColor }]} />
         <Text style={styles.channelName}>{content.channel_name}</Text>
       </View>
     </View>
@@ -76,6 +78,6 @@ const styles = StyleSheet.create({
     backgroundColor: "#111",
   },
   channelRow: { flexDirection: "row", alignItems: "center", gap: 8 },
-  channelLabel: { fontSize: 12, color: "#555", fontWeight: "600" },
-  channelName: { fontSize: 14, color: "#AAA", fontWeight: "500" },
+  channelDot: { width: 8, height: 8, borderRadius: 4 },
+  channelName: { fontSize: 15, color: "#BBB", fontWeight: "500" },
 });
