@@ -7,15 +7,26 @@ type Props = { topic: Topic };
 export function TopicPill({ topic }: Props) {
   const config = TOPIC_CONFIG[topic];
   return (
-    <View style={[styles.pill, { backgroundColor: config.color + "22" }]}>
+    <View style={[styles.pill, { backgroundColor: config.color + "18", borderColor: config.color + "35" }]}>
+      <Text style={styles.emoji}>{config.emoji}</Text>
       <Text style={[styles.text, { color: config.color }]}>
-        {config.emoji} {config.label}
+        {config.label}
       </Text>
     </View>
   );
 }
 
 const styles = StyleSheet.create({
-  pill: { paddingHorizontal: 12, paddingVertical: 6, borderRadius: 16, alignSelf: "flex-start" },
-  text: { fontSize: 13, fontWeight: "600" },
+  pill: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 6,
+    paddingHorizontal: 14,
+    paddingVertical: 7,
+    borderRadius: 20,
+    alignSelf: "flex-start",
+    borderWidth: 1,
+  },
+  emoji: { fontSize: 14 },
+  text: { fontSize: 13, fontWeight: "700", letterSpacing: 0.5 },
 });

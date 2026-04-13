@@ -1,5 +1,6 @@
 import { useCallback, useRef } from "react";
 import { Dimensions, StyleSheet, View } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import Animated, {
   useAnimatedScrollHandler,
   useSharedValue,
@@ -8,6 +9,8 @@ import { Card } from "../lib/types";
 import { CardRenderer } from "./cards/CardRenderer";
 import { CardActions } from "./CardActions";
 import { TopicPill } from "./TopicPill";
+import { TOPIC_GRADIENTS } from "../constants/cardTheme";
+import { TOPIC_CONFIG } from "../constants/topics";
 
 const { height: SCREEN_HEIGHT } = Dimensions.get("window");
 const CARD_HEIGHT = SCREEN_HEIGHT;
@@ -61,19 +64,34 @@ export function FeedSwiper({ cards, onIndexChange, onSave, onSkip, savedCardIds 
       snapToAlignment="start"
       style={styles.container}
     >
-      {cards.map((card, index) => (
-        <View key={card.id} style={[styles.card, { height: CARD_HEIGHT }]}>
-          <View style={styles.topicRow}>
-            <TopicPill topic={card.topic} />
-          </View>
-          <CardRenderer card={card} threadPosition={getThreadPosition(card, index)} />
-          <CardActions
-            onSave={() => onSave(card.id)}
-            onSkip={() => onSkip(card.id)}
-            isSaved={savedCardIds.has(card.id)}
-          />
-        </View>
-      ))}
+      {cards.map((card, index) => {
+        const gradient = TOPIC_GRADIENTS[card.topic];
+        const topicColor = TOPIC_CONFIG[card.topic].color;
+
+        return (
+          <LinearGradient
+            key={card.id}
+            colors={gradient}
+            start={{ x: 0, y: 0 }}
+            end={{ x: 1, y: 1 }}
+            style={[styles.card, { height: CARD_HEIGHT }]}
+          >
+            <View style={styles.topicRow}>
+              <TopicPill topic={card.topic} />
+            </View>
+            <CardRenderer
+              card={card}
+              threadPosition={getThreadPosition(card, index)}
+              topicColor={topicColor}
+            />
+            <CardActions
+              onSave={() => onSave(card.id)}
+              onSkip={() => onSkip(card.id)}
+              isSaved={savedCardIds.has(card.id)}
+            />
+          </LinearGradient>
+        );
+      })}
     </Animated.ScrollView>
   );
 }
@@ -81,5 +99,5 @@ export function FeedSwiper({ cards, onIndexChange, onSave, onSkip, savedCardIds 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0A0A0A" },
   card: { justifyContent: "space-between", paddingTop: 60, paddingBottom: 100 },
-  topicRow: { paddingHorizontal: 24 },
+  topicRow: { paddingHorizontal: 28 },
 });
