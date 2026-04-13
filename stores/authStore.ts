@@ -6,7 +6,8 @@ type AuthState = {
   session: Session | null;
   loading: boolean;
   initialize: () => Promise<void>;
-  signIn: (email: string) => Promise<{ error: string | null }>;
+  signIn: (email: string, password: string) => Promise<{ error: string | null }>;
+  signUp: (email: string, password: string) => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 };
 
@@ -25,8 +26,13 @@ export const useAuthStore = create<AuthState>((set) => ({
     });
   },
 
-  signIn: async (email: string) => {
-    const { error } = await supabase.auth.signInWithOtp({ email });
+  signIn: async (email: string, password: string) => {
+    const { error } = await supabase.auth.signInWithPassword({ email, password });
+    return { error: error?.message ?? null };
+  },
+
+  signUp: async (email: string, password: string) => {
+    const { error } = await supabase.auth.signUp({ email, password });
     return { error: error?.message ?? null };
   },
 

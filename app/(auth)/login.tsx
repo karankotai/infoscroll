@@ -12,17 +12,18 @@ import { useAuthStore } from "../../stores/authStore";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
-  const [sent, setSent] = useState(false);
+  const [password, setPassword] = useState("");
+  const [isSignUp, setIsSignUp] = useState(false);
   const [error, setError] = useState<string | null>(null);
-  const { signIn } = useAuthStore();
+  const { signIn, signUp } = useAuthStore();
 
-  const handleSignIn = async () => {
+  const handleSubmit = async () => {
     setError(null);
-    const { error } = await signIn(email);
+    const { error } = isSignUp
+      ? await signUp(email, password)
+      : await signIn(email, password);
     if (error) {
       setError(error);
-    } else {
-      setSent(true);
     }
   };
 
@@ -35,25 +36,42 @@ export default function LoginScreen() {
         <Text style={styles.title}>InfoScroll</Text>
         <Text style={styles.subtitle}>Learn while you scroll</Text>
 
-        {sent ? (
-          <Text style={styles.sent}>Check your email for the magic link!</Text>
-        ) : (
-          <>
-            <TextInput
-              style={styles.input}
-              placeholder="your@email.com"
-              placeholderTextColor="#666"
-              value={email}
-              onChangeText={setEmail}
-              keyboardType="email-address"
-              autoCapitalize="none"
-            />
-            {error && <Text style={styles.error}>{error}</Text>}
-            <TouchableOpacity style={styles.button} onPress={handleSignIn}>
-              <Text style={styles.buttonText}>Send Magic Link</Text>
-            </TouchableOpacity>
-          </>
-        )}
+        <TextInput
+          style={styles.input}
+          placeholder="your@email.com"
+          placeholderTextColor="#666"
+          value={email}
+          onChangeText={setEmail}
+          keyboardType="email-address"
+          autoCapitalize="none"
+        />
+        <TextInput
+          style={styles.input}
+          placeholder="Password"
+          placeholderTextColor="#666"
+          value={password}
+          onChangeText={setPassword}
+          secureTextEntry
+        />
+        {error && <Text style={styles.error}>{error}</Text>}
+        <TouchableOpacity style={styles.button} onPress={handleSubmit}>
+          <Text style={styles.buttonText}>
+            {isSignUp ? "Sign Up" : "Sign In"}
+          </Text>
+        </TouchableOpacity>
+        <TouchableOpacity
+          style={styles.toggleButton}
+          onPress={() => {
+            setIsSignUp(!isSignUp);
+            setError(null);
+          }}
+        >
+          <Text style={styles.toggleText}>
+            {isSignUp
+              ? "Already have an account? Sign In"
+              : "Don't have an account? Sign Up"}
+          </Text>
+        </TouchableOpacity>
       </View>
     </KeyboardAvoidingView>
   );
@@ -90,6 +108,7 @@ const styles = StyleSheet.create({
     alignItems: "center",
   },
   buttonText: { color: "#FFF", fontSize: 16, fontWeight: "600" },
+  toggleButton: { marginTop: 16, alignItems: "center" },
+  toggleText: { color: "#888", fontSize: 14 },
   error: { color: "#EF4444", marginBottom: 12, textAlign: "center" },
-  sent: { color: "#10B981", fontSize: 16, textAlign: "center" },
 });
