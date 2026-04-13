@@ -6,6 +6,7 @@ import {
   MiniThreadContent,
   KeyInsightContent,
   DidYouKnowContent,
+  ShortVideoContent,
   TOPICS,
   CARD_TYPES,
 } from "./schemas";
@@ -18,7 +19,8 @@ export type Card = z.infer<typeof CardSchema> & {
     | z.infer<typeof SummaryContent>
     | z.infer<typeof MiniThreadContent>
     | z.infer<typeof KeyInsightContent>
-    | z.infer<typeof DidYouKnowContent>;
+    | z.infer<typeof DidYouKnowContent>
+    | z.infer<typeof ShortVideoContent>;
 };
 
 export type Topic = (typeof TOPICS)[number];

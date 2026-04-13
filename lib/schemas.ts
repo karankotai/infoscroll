@@ -17,6 +17,7 @@ export const CARD_TYPES = [
   "mini_thread",
   "key_insight",
   "did_you_know",
+  "short_video",
 ] as const;
 
 export const DIFFICULTIES = ["casual", "moderate", "deep"] as const;
@@ -50,12 +51,19 @@ export const DidYouKnowContent = z.object({
   fun_detail: z.string().min(1),
 });
 
+export const ShortVideoContent = z.object({
+  youtube_id: z.string().min(1),
+  channel_name: z.string().min(1),
+  duration_seconds: z.number().int().positive().max(60),
+});
+
 export const CardContentByType = {
   quick_fact: QuickFactContent,
   summary: SummaryContent,
   mini_thread: MiniThreadContent,
   key_insight: KeyInsightContent,
   did_you_know: DidYouKnowContent,
+  short_video: ShortVideoContent,
 } as const;
 
 export const CardSchema = z.object({

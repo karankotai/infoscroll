@@ -5,6 +5,7 @@ import { SummaryCard } from "./SummaryCard";
 import { MiniThreadCard } from "./MiniThreadCard";
 import { KeyInsightCard } from "./KeyInsightCard";
 import { DidYouKnowCard } from "./DidYouKnowCard";
+import { ShortVideoCard } from "./ShortVideoCard";
 
 type Props = {
   card: Card;
@@ -33,5 +34,7 @@ export function CardRenderer({ card, threadPosition, topicColor }: Props) {
       return <KeyInsightCard title={card.title} content={card.content as any} accentColor={accentColor} topicColor={topicColor} />;
     case "did_you_know":
       return <DidYouKnowCard title={card.title} content={card.content as any} accentColor={accentColor} />;
+    case "short_video":
+      return <ShortVideoCard title={card.title} content={card.content as any} accentColor={accentColor} />;
   }
 }

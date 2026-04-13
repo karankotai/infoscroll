@@ -19,6 +19,7 @@ export const CARD_TYPE_ACCENT: Record<CardType, string> = {
   mini_thread: "#F59E0B",
   key_insight: "#10B981",
   did_you_know: "#EC4899",
+  short_video: "#EF4444",
 };
 
 // Card type decorative icons (emoji for now, could be SVG later)
@@ -28,4 +29,5 @@ export const CARD_TYPE_ICON: Record<CardType, string> = {
   mini_thread: "🧵",
   key_insight: "💡",
   did_you_know: "🤯",
+  short_video: "🎬",
 };
