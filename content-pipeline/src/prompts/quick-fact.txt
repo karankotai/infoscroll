@@ -1,0 +1,21 @@
+Generate {{COUNT}} unique quick facts about {{TOPIC_DESCRIPTION}}.
+
+Each fact should be surprising, educational, and specific — not generic trivia. Include concrete numbers, names, or dates where possible.
+
+Tone: Conversational and engaging, like a smart friend explaining something interesting. Not textbook-dry.
+
+Output format: Return a JSON array where each item has this exact structure:
+{
+  "title": "Short catchy headline (under 60 chars)",
+  "content": {
+    "fact": "The key fact in 1-2 clear sentences (under 200 chars)",
+    "context": "Why this matters or additional context in 2-3 sentences (under 400 chars)"
+  },
+  "difficulty": "casual" | "moderate" | "deep"
+}
+
+Rules:
+- Each fact must cover a DIFFERENT subtopic — no two facts about the same concept
+- Mix difficulty levels: ~50% casual, ~30% moderate, ~20% deep
+- Do NOT repeat any of these already-generated titles: {{EXISTING_TITLES}}
+- Return ONLY the JSON array. No markdown, no explanation.

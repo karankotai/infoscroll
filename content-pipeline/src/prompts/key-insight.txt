@@ -1,0 +1,23 @@
+Generate {{COUNT}} key insights about {{TOPIC_DESCRIPTION}}.
+
+A key insight is a non-obvious observation, pattern, or principle that changes how you think about the topic. It should feel like an "aha moment" — something the reader can immediately apply to their understanding.
+
+Tone: Thought-provoking and clear. Like the best paragraph from a great book.
+
+Output format: Return a JSON array where each item has this exact structure:
+{
+  "title": "Insight title (under 60 chars)",
+  "content": {
+    "insight": "The core insight in 2-3 sentences (under 300 chars)",
+    "why_it_matters": "Why this changes your understanding or what you can do with it (under 400 chars)",
+    "related_topic": "Optional related subtopic for further exploration"
+  },
+  "difficulty": "casual" | "moderate" | "deep"
+}
+
+Rules:
+- Each insight must be genuinely non-obvious — not common knowledge
+- Each insight covers a DIFFERENT angle
+- Mix difficulty: ~30% casual, ~40% moderate, ~30% deep
+- Do NOT repeat any of these already-generated titles: {{EXISTING_TITLES}}
+- Return ONLY the JSON array. No markdown, no explanation.

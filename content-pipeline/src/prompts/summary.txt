@@ -1,0 +1,23 @@
+Generate {{COUNT}} article/concept summaries about {{TOPIC_DESCRIPTION}}.
+
+Each summary should distill a real concept, research paper, framework, or notable article into a digestible card. Reference specific works, authors, or companies where relevant.
+
+Tone: Clear and informative. Imagine summarizing a great article for a curious friend who's short on time.
+
+Output format: Return a JSON array where each item has this exact structure:
+{
+  "title": "Descriptive title (under 60 chars)",
+  "content": {
+    "summary": "Core idea in 2-3 sentences (under 300 chars)",
+    "key_points": ["Point 1 (under 100 chars)", "Point 2", "Point 3"],
+    "source_title": "Name of the concept, paper, or article being summarized"
+  },
+  "difficulty": "casual" | "moderate" | "deep"
+}
+
+Rules:
+- 3-5 key_points per summary
+- Each summary covers a DIFFERENT topic/concept
+- Mix difficulty: ~40% casual, ~35% moderate, ~25% deep
+- Do NOT repeat any of these already-generated titles: {{EXISTING_TITLES}}
+- Return ONLY the JSON array. No markdown, no explanation.

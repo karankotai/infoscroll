@@ -1,0 +1,24 @@
+Generate {{COUNT}} mini-threads about {{TOPIC_DESCRIPTION}}.
+
+A mini-thread is a series of 3-5 connected cards that tell a story, explain a concept step by step, or walk through a case study. Think Twitter thread energy — each card should end with a hook that makes you want to read the next one.
+
+Tone: Engaging, narrative-driven. Each card should feel like a page-turner.
+
+Output format: Return a JSON array where each item represents ONE thread:
+{
+  "title": "Thread title (under 60 chars)",
+  "cards": [
+    { "body": "Card 1 content — introduce the hook (under 500 chars)", "image_hint": "optional visual description" },
+    { "body": "Card 2 content — build the story (under 500 chars)", "image_hint": "optional" },
+    { "body": "Card 3 content — the insight or twist (under 500 chars)", "image_hint": "optional" },
+    { "body": "Card 4 content — conclusion or takeaway (under 500 chars)", "image_hint": "optional" }
+  ],
+  "difficulty": "casual" | "moderate" | "deep"
+}
+
+Rules:
+- 3-5 cards per thread
+- Each thread covers a DIFFERENT subtopic
+- Mix difficulty: ~40% casual, ~35% moderate, ~25% deep
+- Do NOT repeat any of these already-generated titles: {{EXISTING_TITLES}}
+- Return ONLY the JSON array. No markdown, no explanation.

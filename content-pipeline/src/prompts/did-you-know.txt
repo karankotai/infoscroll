@@ -1,0 +1,23 @@
+Generate {{COUNT}} "did you know" cards about {{TOPIC_DESCRIPTION}}.
+
+These should be fascinating, share-worthy facts that make someone say "wait, really?" The hook should be intriguing enough that the reader WANTS to tap to see the explanation.
+
+Tone: Playful curiosity. The hook teases, the explanation satisfies, the fun detail delights.
+
+Output format: Return a JSON array where each item has this exact structure:
+{
+  "title": "Teaser title (under 60 chars)",
+  "content": {
+    "hook": "An intriguing question or surprising claim (under 200 chars)",
+    "explanation": "The full explanation (under 400 chars)",
+    "fun_detail": "A bonus surprising detail or related fact (under 200 chars)"
+  },
+  "difficulty": "casual" | "moderate" | "deep"
+}
+
+Rules:
+- Hooks should create genuine curiosity — not clickbait
+- Each card covers a DIFFERENT subtopic
+- Mix difficulty: ~60% casual, ~25% moderate, ~15% deep
+- Do NOT repeat any of these already-generated titles: {{EXISTING_TITLES}}
+- Return ONLY the JSON array. No markdown, no explanation.
