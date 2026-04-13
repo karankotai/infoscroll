@@ -76,5 +76,5 @@ export function validateCardContent(
   content: unknown
 ) {
   const schema = CardContentByType[cardType];
-  return schema.parse(content);
+  return schema.safeParse(content);
 }
