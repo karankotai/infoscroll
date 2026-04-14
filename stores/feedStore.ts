@@ -2,12 +2,17 @@ import { create } from "zustand";
 import { supabase } from "../lib/supabase";
 import { Card } from "../lib/types";
 
+export type FeedMode = "cards" | "videos";
+
 type FeedState = {
+  mode: FeedMode;
   cards: Card[];
+  videos: Card[];
   currentIndex: number;
   loading: boolean;
   error: string | null;
 
+  setMode: (mode: FeedMode) => void;
   fetchFeed: () => Promise<void>;
   markSeen: (cardId: string) => Promise<void>;
   markSaved: (cardId: string) => Promise<void>;
@@ -16,12 +21,19 @@ type FeedState = {
 };
 
 export const useFeedStore = create<FeedState>((set, get) => ({
+  mode: "cards",
   cards: [],
+  videos: [],
   currentIndex: 0,
   loading: false,
   error: null,
 
+  setMode: (mode: FeedMode) => {
+    set({ mode, currentIndex: 0 });
+  },
+
   fetchFeed: async () => {
+    const { mode } = get();
     set({ loading: true, error: null });
     const {
       data: { user },
@@ -31,7 +43,8 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       return;
     }
 
-    const { data, error } = await supabase.rpc("get_feed", {
+    const rpcName = mode === "videos" ? "get_video_feed" : "get_feed";
+    const { data, error } = await supabase.rpc(rpcName, {
       p_user_id: user.id,
       p_limit: 20,
     });
@@ -41,10 +54,11 @@ export const useFeedStore = create<FeedState>((set, get) => ({
       return;
     }
 
-    set((state) => ({
-      cards: [...state.cards, ...(data as Card[])],
-      loading: false,
-    }));
+    set((state) =>
+      mode === "videos"
+        ? { videos: [...state.videos, ...(data as Card[])], loading: false }
+        : { cards: [...state.cards, ...(data as Card[])], loading: false }
+    );
   },
 
   markSeen: async (cardId: string) => {
@@ -91,8 +105,9 @@ export const useFeedStore = create<FeedState>((set, get) => ({
 
   setCurrentIndex: (index: number) => {
     set({ currentIndex: index });
-    const { cards, fetchFeed } = get();
-    if (index >= cards.length - 5) {
+    const { mode, cards, videos, fetchFeed } = get();
+    const currentList = mode === "videos" ? videos : cards;
+    if (index >= currentList.length - 5) {
       fetchFeed();
     }
   },

@@ -117,7 +117,7 @@ export function FeedSwiper({ cards, onIndexChange, onSave, onSkip, savedCardIds 
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0A0A0A" },
-  card: { justifyContent: "space-between", paddingTop: 60, paddingBottom: 100 },
+  card: { justifyContent: "space-between", paddingTop: 120, paddingBottom: 100 },
   videoCard: { backgroundColor: "#000" },
   topicRow: { paddingHorizontal: 28 },
 });
