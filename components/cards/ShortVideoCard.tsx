@@ -1,4 +1,3 @@
-import { useState, useRef, useEffect } from "react";
 import {
   View,
   Text,
@@ -8,7 +7,6 @@ import {
   Linking,
   Dimensions,
 } from "react-native";
-import { WebView, WebViewMessageEvent } from "react-native-webview";
 import { z } from "zod";
 import { ShortVideoContent } from "../../lib/schemas";
 
@@ -21,145 +19,36 @@ type Props = {
   isActive: boolean;
 };
 
-// YouTube IFrame API error codes that indicate embedding is blocked
-// 101 & 150: embedding disabled by owner
-// 153: player config error (also embed-related)
-// 100: video not found/private
-const EMBED_BLOCKED_CODES = new Set([100, 101, 150, 153]);
-
-function getPlayerHtml(videoId: string, autoplay: boolean) {
-  return `
-    <!DOCTYPE html>
-    <html>
-    <head>
-      <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
-      <style>
-        * { margin: 0; padding: 0; box-sizing: border-box; }
-        html, body { width: 100%; height: 100%; background: #000; overflow: hidden; }
-        #player { width: 100%; height: 100%; }
-      </style>
-    </head>
-    <body>
-      <div id="player"></div>
-      <script>
-        var tag = document.createElement('script');
-        tag.src = 'https://www.youtube.com/iframe_api';
-        var firstScriptTag = document.getElementsByTagName('script')[0];
-        firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-
-        var player;
-        function onYouTubeIframeAPIReady() {
-          player = new YT.Player('player', {
-            videoId: '${videoId}',
-            playerVars: {
-              autoplay: ${autoplay ? 1 : 0},
-              mute: 1,
-              playsinline: 1,
-              controls: 1,
-              rel: 0,
-              modestbranding: 1,
-              showinfo: 0
-            },
-            events: {
-              onReady: function(e) {
-                window.ReactNativeWebView.postMessage(JSON.stringify({type: 'ready'}));
-              },
-              onError: function(e) {
-                window.ReactNativeWebView.postMessage(JSON.stringify({type: 'error', code: e.data}));
-              }
-            }
-          });
-        }
-      </script>
-    </body>
-    </html>
-  `;
-}
-
-export function ShortVideoCard({ title, content, accentColor, isActive }: Props) {
-  const [embedFailed, setEmbedFailed] = useState(false);
-  const webviewRef = useRef<WebView>(null);
-
-  // Reset fail state when video changes
-  useEffect(() => {
-    setEmbedFailed(false);
-  }, [content.youtube_id]);
-
-  const onMessage = (event: WebViewMessageEvent) => {
-    try {
-      const msg = JSON.parse(event.nativeEvent.data);
-      if (msg.type === "error" && EMBED_BLOCKED_CODES.has(msg.code)) {
-        setEmbedFailed(true);
-      }
-    } catch {
-      // ignore
-    }
-  };
+export function ShortVideoCard({ title, content, accentColor }: Props) {
+  const thumbnailUrl = `https://img.youtube.com/vi/${content.youtube_id}/hqdefault.jpg`;
 
   const openInYoutube = () => {
     Linking.openURL(`https://www.youtube.com/watch?v=${content.youtube_id}`);
   };
 
-  // Fallback UI: thumbnail with tap-to-open
-  if (embedFailed) {
-    const thumbnailUrl = `https://img.youtube.com/vi/${content.youtube_id}/hqdefault.jpg`;
-    return (
-      <View style={styles.container}>
-        <TouchableOpacity style={styles.fallbackContainer} onPress={openInYoutube} activeOpacity={0.9}>
-          <Image source={{ uri: thumbnailUrl }} style={styles.fallbackThumbnail} resizeMode="cover" />
-          <View style={styles.fallbackDim} />
-          <View style={styles.fallbackContent}>
-            <View style={[styles.playCircle, { backgroundColor: accentColor }]}>
-              <Text style={styles.playIcon}>▶</Text>
-            </View>
-            <Text style={styles.fallbackHint}>Tap to watch on YouTube</Text>
-          </View>
-        </TouchableOpacity>
-
-        <View style={styles.bottomOverlay}>
-          <View style={styles.titleRow}>
-            <View style={[styles.badge, { backgroundColor: accentColor }]}>
-              <Text style={styles.badgeText}>🎬 {content.duration_seconds}s</Text>
-            </View>
-          </View>
-          <Text style={styles.title} numberOfLines={2}>{title}</Text>
-          <View style={styles.channelRow}>
-            <View style={[styles.channelDot, { backgroundColor: accentColor }]} />
-            <Text style={styles.channelName}>{content.channel_name}</Text>
-          </View>
-        </View>
-      </View>
-    );
-  }
-
-  // Normal: embedded YouTube player
   return (
     <View style={styles.container}>
-      <View style={styles.playerContainer}>
-        <WebView
-          ref={webviewRef}
-          source={{
-            html: getPlayerHtml(content.youtube_id, isActive),
-            baseUrl: "https://www.youtube.com",
-          }}
-          style={styles.webview}
-          allowsInlineMediaPlayback={true}
-          mediaPlaybackRequiresUserAction={false}
-          javaScriptEnabled={true}
-          scrollEnabled={false}
-          bounces={false}
-          allowsFullscreenVideo={true}
-          onMessage={onMessage}
-        />
-      </View>
+      <TouchableOpacity style={styles.tapArea} onPress={openInYoutube} activeOpacity={0.92}>
+        <Image source={{ uri: thumbnailUrl }} style={styles.thumbnail} resizeMode="cover" />
+        <View style={styles.dim} />
+        <View style={styles.playButtonContainer}>
+          <View style={[styles.playCircle, { backgroundColor: accentColor }]}>
+            <Text style={styles.playIcon}>▶</Text>
+          </View>
+        </View>
+      </TouchableOpacity>
 
       <View style={styles.bottomOverlay}>
-        <View style={styles.titleRow}>
+        <View style={styles.topRow}>
           <View style={[styles.badge, { backgroundColor: accentColor }]}>
             <Text style={styles.badgeText}>🎬 {content.duration_seconds}s</Text>
           </View>
+          <View style={styles.youtubeBadge}>
+            <Text style={styles.youtubeIcon}>▶</Text>
+            <Text style={styles.youtubeText}>YouTube</Text>
+          </View>
         </View>
-        <Text style={styles.title} numberOfLines={2}>{title}</Text>
+        <Text style={styles.title} numberOfLines={3}>{title}</Text>
         <View style={styles.channelRow}>
           <View style={[styles.channelDot, { backgroundColor: accentColor }]} />
           <Text style={styles.channelName}>{content.channel_name}</Text>
@@ -174,48 +63,36 @@ const styles = StyleSheet.create({
     flex: 1,
     backgroundColor: "#000",
   },
-  playerContainer: {
-    flex: 1,
-  },
-  webview: {
-    flex: 1,
-    backgroundColor: "#000",
-  },
-  fallbackContainer: {
+  tapArea: {
     flex: 1,
     justifyContent: "center",
     alignItems: "center",
   },
-  fallbackThumbnail: {
+  thumbnail: {
     ...StyleSheet.absoluteFillObject,
     width: SCREEN_WIDTH,
   },
-  fallbackDim: {
+  dim: {
     ...StyleSheet.absoluteFillObject,
-    backgroundColor: "rgba(0,0,0,0.55)",
+    backgroundColor: "rgba(0,0,0,0.4)",
   },
-  fallbackContent: {
+  playButtonContainer: {
     alignItems: "center",
-    gap: 16,
+    gap: 14,
   },
   playCircle: {
-    width: 80,
-    height: 80,
-    borderRadius: 40,
+    width: 88,
+    height: 88,
+    borderRadius: 44,
     justifyContent: "center",
     alignItems: "center",
+    shadowColor: "#000",
+    shadowOpacity: 0.5,
+    shadowRadius: 12,
+    shadowOffset: { width: 0, height: 4 },
+    elevation: 8,
   },
-  playIcon: { color: "#FFF", fontSize: 32, marginLeft: 4 },
-  fallbackHint: {
-    color: "#FFF",
-    fontSize: 15,
-    fontWeight: "600",
-    backgroundColor: "rgba(0,0,0,0.6)",
-    paddingHorizontal: 14,
-    paddingVertical: 8,
-    borderRadius: 20,
-    overflow: "hidden",
-  },
+  playIcon: { color: "#FFF", fontSize: 36, marginLeft: 5 },
   bottomOverlay: {
     position: "absolute",
     bottom: 0,
@@ -224,11 +101,13 @@ const styles = StyleSheet.create({
     paddingHorizontal: 20,
     paddingTop: 40,
     paddingBottom: 16,
-    backgroundColor: "rgba(0,0,0,0.6)",
+    backgroundColor: "rgba(0,0,0,0.7)",
   },
-  titleRow: {
+  topRow: {
     flexDirection: "row",
-    marginBottom: 8,
+    alignItems: "center",
+    gap: 8,
+    marginBottom: 10,
   },
   badge: {
     paddingHorizontal: 10,
@@ -236,12 +115,23 @@ const styles = StyleSheet.create({
     borderRadius: 8,
   },
   badgeText: { color: "#FFF", fontSize: 12, fontWeight: "700" },
+  youtubeBadge: {
+    flexDirection: "row",
+    alignItems: "center",
+    gap: 5,
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 8,
+    backgroundColor: "rgba(255,255,255,0.12)",
+  },
+  youtubeIcon: { color: "#FF0000", fontSize: 11 },
+  youtubeText: { color: "#FFF", fontSize: 11, fontWeight: "600" },
   title: {
-    fontSize: 18,
+    fontSize: 19,
     fontWeight: "700",
     color: "#FFF",
-    marginBottom: 6,
-    lineHeight: 24,
+    marginBottom: 8,
+    lineHeight: 26,
   },
   channelRow: { flexDirection: "row", alignItems: "center", gap: 8 },
   channelDot: { width: 6, height: 6, borderRadius: 3 },
