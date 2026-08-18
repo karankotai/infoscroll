@@ -4,12 +4,29 @@
     "slug": "infoscroll",
     "version": "1.0.0",
     "scheme": "infoscroll",
-    "web": { "bundler": "metro" },
+    "icon": "./assets/icon.png",
+    "web": {
+      "bundler": "metro",
+      "favicon": "./assets/favicon.png"
+    },
     "plugins": [
       "expo-router"
     ],
     "experiments": {
       "typedRoutes": true
-    }
+    },
+    "ios": {
+      "bundleIdentifier": "com.karansome.infoscroll",
+      "infoPlist": {
+        "ITSAppUsesNonExemptEncryption": false
+      }
+    },
+    "extra": {
+      "router": {},
+      "eas": {
+        "projectId": "981dec51-84d6-4373-8bae-6e37285f425f"
+      }
+    },
+    "owner": "karanadev"
   }
 }
