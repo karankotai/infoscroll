@@ -9,6 +9,7 @@ import {
   Platform,
 } from "react-native";
 import { useAuthStore } from "../../stores/authStore";
+import { AUTH_MAX_WIDTH } from "../../constants/layout";
 
 export default function LoginScreen() {
   const [email, setEmail] = useState("");
@@ -79,7 +80,14 @@ export default function LoginScreen() {
 
 const styles = StyleSheet.create({
   container: { flex: 1, backgroundColor: "#0A0A0A" },
-  content: { flex: 1, justifyContent: "center", paddingHorizontal: 32 },
+  content: {
+    flex: 1,
+    justifyContent: "center",
+    paddingHorizontal: 32,
+    width: "100%",
+    maxWidth: AUTH_MAX_WIDTH,
+    alignSelf: "center",
+  },
   title: {
     fontSize: 36,
     fontWeight: "bold",

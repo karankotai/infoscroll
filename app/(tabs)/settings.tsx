@@ -1,36 +1,34 @@
-import { View, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { supabase } from "../../lib/supabase";
 import { useAuthStore } from "../../stores/authStore";
+import { confirm, notify } from "../../lib/dialogs";
+import { CONTENT_MAX_WIDTH, SCREEN_TOP_PADDING } from "../../constants/layout";
 
 export default function SettingsScreen() {
   const { signOut, session } = useAuthStore();
 
-  const handleClearHistory = () => {
-    Alert.alert(
-      "Clear History",
-      "This will mark all cards as unseen so they appear in your feed again. Continue?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Clear",
-          style: "destructive",
-          onPress: async () => {
-            const {
-              data: { user },
-            } = await supabase.auth.getUser();
-            if (!user) return;
+  const handleClearHistory = async () => {
+    const ok = await confirm({
+      title: "Clear History",
+      message:
+        "This will mark all cards as unseen so they appear in your feed again. Continue?",
+      confirmLabel: "Clear",
+      destructive: true,
+    });
+    if (!ok) return;
 
-            await supabase
-              .from("user_card_state")
-              .delete()
-              .eq("user_id", user.id)
-              .eq("status", "seen");
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
 
-            Alert.alert("Done", "Your seen history has been cleared.");
-          },
-        },
-      ]
-    );
+    await supabase
+      .from("user_card_state")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("status", "seen");
+
+    notify("Done", "Your seen history has been cleared.");
   };
 
   return (
@@ -65,7 +63,15 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60, paddingHorizontal: 24 },
+  container: {
+    flex: 1,
+    width: "100%",
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: "center",
+    backgroundColor: "#0A0A0A",
+    paddingTop: SCREEN_TOP_PADDING,
+    paddingHorizontal: 24,
+  },
   header: { fontSize: 28, fontWeight: "bold", color: "#FFF", marginBottom: 32 },
   section: { marginBottom: 32 },
   sectionTitle: { fontSize: 14, color: "#666", fontWeight: "600", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 },
