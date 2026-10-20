@@ -10,6 +10,7 @@ import {
 } from "react-native";
 import { supabase } from "../../lib/supabase";
 import { TOPIC_CONFIG } from "../../constants/topics";
+import { CONTENT_MAX_WIDTH, SCREEN_TOP_PADDING } from "../../constants/layout";
 import { Topic } from "../../lib/types";
 import { TOPICS } from "../../lib/schemas";
 
@@ -153,7 +154,14 @@ export default function NewsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60 },
+  container: {
+    flex: 1,
+    width: "100%",
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: "center",
+    backgroundColor: "#0A0A0A",
+    paddingTop: SCREEN_TOP_PADDING,
+  },
   header: { fontSize: 28, fontWeight: "bold", color: "#FFF", paddingHorizontal: 24, marginBottom: 16 },
   topicBar: { flexGrow: 0, flexShrink: 0, height: 44, marginBottom: 16 },
   topicBarContent: { paddingHorizontal: 24, gap: 8, alignItems: "center" },

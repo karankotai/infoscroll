@@ -10,6 +10,7 @@ import { supabase } from "../../lib/supabase";
 import { Card, Topic } from "../../lib/types";
 import { TopicPill } from "../../components/TopicPill";
 import { TOPIC_CONFIG } from "../../constants/topics";
+import { CONTENT_MAX_WIDTH, SCREEN_TOP_PADDING } from "../../constants/layout";
 import { TOPICS } from "../../lib/schemas";
 
 export default function SavedScreen() {
@@ -101,7 +102,14 @@ export default function SavedScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60 },
+  container: {
+    flex: 1,
+    width: "100%",
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: "center",
+    backgroundColor: "#0A0A0A",
+    paddingTop: SCREEN_TOP_PADDING,
+  },
   header: { fontSize: 28, fontWeight: "bold", color: "#FFF", paddingHorizontal: 24 },
   count: { fontSize: 14, color: "#666", paddingHorizontal: 24, marginTop: 4, marginBottom: 16 },
   filterBar: { flexGrow: 0, flexShrink: 0, height: 44, marginBottom: 16 },

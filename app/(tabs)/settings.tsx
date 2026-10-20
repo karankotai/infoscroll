@@ -2,6 +2,7 @@ import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { supabase } from "../../lib/supabase";
 import { useAuthStore } from "../../stores/authStore";
 import { confirm, notify } from "../../lib/dialogs";
+import { CONTENT_MAX_WIDTH, SCREEN_TOP_PADDING } from "../../constants/layout";
 
 export default function SettingsScreen() {
   const { signOut, session } = useAuthStore();
@@ -62,7 +63,15 @@ export default function SettingsScreen() {
 }
 
 const styles = StyleSheet.create({
-  container: { flex: 1, backgroundColor: "#0A0A0A", paddingTop: 60, paddingHorizontal: 24 },
+  container: {
+    flex: 1,
+    width: "100%",
+    maxWidth: CONTENT_MAX_WIDTH,
+    alignSelf: "center",
+    backgroundColor: "#0A0A0A",
+    paddingTop: SCREEN_TOP_PADDING,
+    paddingHorizontal: 24,
+  },
   header: { fontSize: 28, fontWeight: "bold", color: "#FFF", marginBottom: 32 },
   section: { marginBottom: 32 },
   sectionTitle: { fontSize: 14, color: "#666", fontWeight: "600", marginBottom: 12, textTransform: "uppercase", letterSpacing: 1 },

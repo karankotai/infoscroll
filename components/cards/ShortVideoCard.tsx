@@ -5,12 +5,9 @@ import {
   TouchableOpacity,
   Image,
   Linking,
-  Dimensions,
 } from "react-native";
 import { z } from "zod";
 import { ShortVideoContent } from "../../lib/schemas";
-
-const { width: SCREEN_WIDTH } = Dimensions.get("window");
 
 type Props = {
   title: string;
@@ -70,7 +67,6 @@ const styles = StyleSheet.create({
   },
   thumbnail: {
     ...StyleSheet.absoluteFillObject,
-    width: SCREEN_WIDTH,
   },
   dim: {
     ...StyleSheet.absoluteFillObject,
