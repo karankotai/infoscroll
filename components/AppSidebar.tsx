@@ -5,7 +5,7 @@ import { StyleSheet, Text, TouchableOpacity, View } from "react-native";
 export const SIDEBAR_WIDTH = 84;
 
 const NAV_ITEMS = [
-  { href: "/", label: "Feed", icon: "layers-outline", iconActive: "layers" },
+  { href: "/feed", label: "Feed", icon: "layers-outline", iconActive: "layers" },
   { href: "/news", label: "News", icon: "newspaper-outline", iconActive: "newspaper" },
   { href: "/saved", label: "Saved", icon: "bookmark-outline", iconActive: "bookmark" },
   { href: "/settings", label: "Settings", icon: "settings-outline", iconActive: "settings" },
