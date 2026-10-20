@@ -1,36 +1,33 @@
-import { View, Text, TouchableOpacity, Alert, StyleSheet } from "react-native";
+import { View, Text, TouchableOpacity, StyleSheet } from "react-native";
 import { supabase } from "../../lib/supabase";
 import { useAuthStore } from "../../stores/authStore";
+import { confirm, notify } from "../../lib/dialogs";
 
 export default function SettingsScreen() {
   const { signOut, session } = useAuthStore();
 
-  const handleClearHistory = () => {
-    Alert.alert(
-      "Clear History",
-      "This will mark all cards as unseen so they appear in your feed again. Continue?",
-      [
-        { text: "Cancel", style: "cancel" },
-        {
-          text: "Clear",
-          style: "destructive",
-          onPress: async () => {
-            const {
-              data: { user },
-            } = await supabase.auth.getUser();
-            if (!user) return;
+  const handleClearHistory = async () => {
+    const ok = await confirm({
+      title: "Clear History",
+      message:
+        "This will mark all cards as unseen so they appear in your feed again. Continue?",
+      confirmLabel: "Clear",
+      destructive: true,
+    });
+    if (!ok) return;
 
-            await supabase
-              .from("user_card_state")
-              .delete()
-              .eq("user_id", user.id)
-              .eq("status", "seen");
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    if (!user) return;
 
-            Alert.alert("Done", "Your seen history has been cleared.");
-          },
-        },
-      ]
-    );
+    await supabase
+      .from("user_card_state")
+      .delete()
+      .eq("user_id", user.id)
+      .eq("status", "seen");
+
+    notify("Done", "Your seen history has been cleared.");
   };
 
   return (
