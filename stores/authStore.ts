@@ -8,6 +8,7 @@ type AuthState = {
   initialize: () => Promise<void>;
   signIn: (email: string, password: string) => Promise<{ error: string | null }>;
   signUp: (email: string, password: string) => Promise<{ error: string | null }>;
+  signInDemo: () => Promise<{ error: string | null }>;
   signOut: () => Promise<void>;
 };
 
@@ -33,6 +34,14 @@ export const useAuthStore = create<AuthState>((set) => ({
 
   signUp: async (email: string, password: string) => {
     const { error } = await supabase.auth.signUp({ email, password });
+    return { error: error?.message ?? null };
+  },
+
+  // Backs the "Try it out" button on the marketing page: Supabase mints a
+  // throwaway account so each visitor gets an isolated feed, saved list and
+  // history without having to sign up.
+  signInDemo: async () => {
+    const { error } = await supabase.auth.signInAnonymously();
     return { error: error?.message ?? null };
   },
 
