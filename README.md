@@ -69,6 +69,26 @@ Run the web target:
 npm run web
 ```
 
+## Web
+
+Produce a production web bundle:
+
+```bash
+npm run build:web
+```
+
+The bundle is written to `dist/`, which is generated output and git-ignored.
+
+The bundle is a single-page app, so the host must rewrite unknown paths to
+`index.html`. On Netlify use `/*  /index.html  200`; on Vercel add a
+`rewrites` entry pointing to `/index.html`. Without this, deep links such as
+`/saved` return a 404 when the page is refreshed.
+
+The web build is responsive: at 768px and wider it replaces the bottom tab bar
+with a persistent left nav rail, centres the feed in a fixed-width card column,
+and enables keyboard paging with the arrow keys, Page Up/Page Down, or `j`/`k`.
+Below that width, and on iOS and Android, the mobile layout is used unchanged.
+
 ## Native Builds
 
 The project includes `eas.json` profiles for development, preview, simulator preview, and production builds.
@@ -116,4 +136,5 @@ npm run ios:release   # Run iOS release configuration
 npm run android       # Run Android development build
 npm run android:release
 npm run web           # Start Expo web
+npm run build:web     # Export a static web bundle to dist/
 ```
